@@ -1,0 +1,46 @@
+package org.usfirst.frc.team5899.robot;
+
+import com.ctre.CANTalon;
+
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+public class EncoderDrive {
+	double encoderLeft, encoderRight;
+	RobotDrive drive;
+	
+	public EncoderDrive(RobotDrive drive, double encoderLeft, double encoderRight){
+		this.drive = drive;
+		this.encoderLeft = encoderLeft;
+		this.encoderRight = encoderRight;
+		
+		
+	}
+	
+	public void driveStraight(double distance){
+		
+		double left , right;
+		if ( Math.abs(Math.abs(encoderLeft) - 1410) > 50 && Math.abs(Math.abs(encoderRight) - 1450) > 50) {
+			if (Math.abs(encoderLeft)< 1410){
+				left = 0.5;
+			} else {
+				left = -.5;
+			}
+			if (Math.abs(encoderRight) < 1450){
+				right = 0.5;
+			} else {
+				right = -.5;
+			}
+		} else {
+			right = 0;
+			left = 0;
+		}
+		drive.tankDrive(left, right);
+		
+	}
+
+}

@@ -1,0 +1,58 @@
+package org.usfirst.frc.team5899.robot;
+
+import com.ctre.CANTalon;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+//import static org.usfirst.frc.team5899.robot.DeliveryStateEnum;;
+
+public class DeliverGear{
+	DeliveryStateEnum state;
+	CANTalon Talon;
+	//double winchAxis = winchStick.getRawAxis(1);
+public DeliverGear(CANTalon deliveryTalon) {
+	Talon = deliveryTalon;
+}	
+	
+public void GearCases(){
+	switch (state) {
+		case ENCODERRESET1:
+			
+			SmartDashboard.putString("Delivery State", "EncoderReset1");
+			
+			//break;
+			
+		case RAISEDEPLOYER:
+			
+			
+			SmartDashboard.putString("Delivery State", "RaiseDeployer");
+			//this.Talon.set(0.5);
+			
+			//break;
+			
+		case DRIVEFWD:
+			
+			SmartDashboard.putString("Delivery State", "DriveFWD");
+			
+			//break;
+		
+		case LOWERDEPLOYER:
+			
+			SmartDashboard.putString("Delivery State", "LowerDeployer");
+			
+			//break;
+			
+		case ENCODERRESET2:
+			
+			SmartDashboard.putString("Delivery State", "EncoderReset2");
+			
+			//break;
+	
+	
+	}
+}
+}
+
+/*
+ENCODERRESET1, RAISEDEPLOYER,
+DRIVEFWD,LOWERDEPLOYER,ENCODERRESET2;
+
+*/

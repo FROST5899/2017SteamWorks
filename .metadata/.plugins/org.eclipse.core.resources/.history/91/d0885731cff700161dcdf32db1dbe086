@@ -1,0 +1,180 @@
+package org.usfirst.frc.team5899.robot;
+import org.opencv.core.Rect;
+import org.opencv.imgproc.Imgproc;
+
+import com.ctre.CANTalon;
+
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.vision.VisionThread;
+
+
+
+public class Vision {
+
+	//vision stuff:
+	private static final int IMG_WIDTH = 320;
+	private static final int IMG_HEIGHT = 240;
+	private VisionThread visionThread;
+	private double Rect2 = 0.0;
+	private double Rect1 = 0.0;
+	private double Rect3 = 0.0;
+	private double centerRect1;
+	private double centerRect2;	
+	double rectDistance = 0.0;
+	String state = "Scanning";
+	String DIR = "";
+	RobotDrive drive;
+	Encoder encoderLeft;
+	Encoder encoderRight;
+	double[] oldXValues;
+	double[] newXValues;
+	double firstTime = 0;
+	double scanMultiplier = 0.5;
+	public Vision(RobotDrive drive, Encoder encoderLeft, Encoder encoderRight){
+		this.drive = drive;
+		this.encoderLeft = encoderLeft;
+		this.encoderRight = encoderRight;
+		
+		
+	}
+	public void setRect(double R1, double R2) { //double R3) {
+		this.Rect1 = R1;
+		this.Rect2 = R2;
+		//this.Rect3 = R3;
+	}
+	public void resetState() {
+		state = "Scanning";
+	}
+	
+	
+	public  void scanX(double multiplyer){
+		if(Timer.getFPGATimestamp() - Math.floor(Timer.getFPGATimestamp()) > 0.7){
+			drive.arcadeDrive(0, multiplyer);
+			//firstTimeScan = Timer.getFPGATimestamp();
+		} else{
+			drive.arcadeDrive(0,0);
+		}
+	}
+	
+	public void centerX(double turn) {
+		double seventyTwo = (turn < 0) ? -.32 : .32;
+		double speed =  seventyTwo + turn * .0000000125;
+		double mult = -1;
+		
+		if (turn < 0) {
+			mult = -mult;
+		}
+		
+		double actualTurn = speed;
+		SmartDashboard.putNumber("turnSpeed", actualTurn);
+		drive.arcadeDrive(0, mult * actualTurn);
+	}
+	
+	public void forwardX(double turn) {
+		double seventyTwo = (turn < 0) ? -.32 : .32;
+		double speed =  seventyTwo + turn * .0000000125;
+		double mult = -1;
+		
+		if (turn < 0) {
+			mult = -mult;
+		}
+		
+		double actualTurn = speed;
+		SmartDashboard.putNumber("turnSpeed", actualTurn);
+		drive.arcadeDrive(.4, mult * actualTurn);
+	}
+	
+	public void visionCases(String direction) {
+		SmartDashboard.putString("state", state);		
+		
+		
+		double Offset;
+		if (Rect2 != -1) { 
+			if (Rect1 < Rect2) {
+				Offset = Rect1; 
+			}
+			else { 
+				Offset = Rect2; 
+			}
+		} else {
+		Offset = Rect1;
+		}
+		
+		
+		double OffCube = (Offset - (320/2) - 53)*(Offset - (320/2) - 53)*(Offset - (320/2) - 53);
+		
+		if (state == "Scanning") {
+			if (Rect1 == -1) {
+				SmartDashboard.putBoolean("lined up", false);
+				scanX(direction == "left" ? -scanMultiplier : scanMultiplier);
+			} else {
+				drive.arcadeDrive(0, 0);
+				state = "Centering";
+			}
+		} else if (state == "Centering") {
+			if (Math.abs(Offset - (320/2) - 53) > 50) {
+				SmartDashboard.putNumber("CenterXval", Offset - (320/2) - 53);
+				SmartDashboard.putBoolean("lined up", false);
+				centerX(OffCube);
+			} else {
+				drive.arcadeDrive(0, 0);
+				state = "Driving";
+			}
+		} else if (state == "driving") {
+			forwardX(OffCube);
+			SmartDashboard.putBoolean("lined up", true);
+		}
+		
+		//my stuff
+		
+		
+		SmartDashboard.putNumber("RectOffset", 320/2 - Offset - 53);
+		SmartDashboard.putNumber("Rect1", Rect1);
+		SmartDashboard.putNumber("Rect2", Rect2);
+		
+			//centerX(Offset+106-320/2);
+			//double val = (1/((Offset - 320/2)*(Offset - 320/2)*(Offset - 320/2));
+		
+		
+		
+		/*
+		this.DIR = direction;
+		SmartDashboard.putString("visionState", state);
+		SmartDashboard.putString("scanningDir", DIR);
+		if (state == "scanning"){
+			//firstTime = Timer.getFPGATimestamp();
+			if (DIR == "left") {
+				drive.tankDrive(0.3, -0.3);
+				SmartDashboard.putBoolean("turning left", true);
+				SmartDashboard.putBoolean("reached here", false);
+				if (this.Rect1 != -1){
+					state = "scanningForSecondContour";
+				}
+			}
+			if (DIR == "right") {
+				drive.tankDrive(-0.3, 0.3);
+				SmartDashboard.putBoolean("turning right", true);
+				SmartDashboard.putBoolean("reached here", false);
+				if (newXValues != oldXValues){
+					state = "scanningForSecondContour";
+				}
+			}
+
+				SmartDashboard.putNumber("scanningValue1", Rect1);
+				SmartDashboard.putNumber("scanningValue2", Rect2);
+		
+		}
+		
+		if(state == "scanningForSecondContour"){
+			SmartDashboard.putBoolean("reached here", true);
+		}*/
+	}
+	
+}
