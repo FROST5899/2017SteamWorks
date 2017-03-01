@@ -1,1 +1,0 @@
-INDEX VERSION 1.129+C:\Users\ruwag\OneDrive\Documents\JavaGradle\.metadata\.plugins\org.eclipse.jdt.core
