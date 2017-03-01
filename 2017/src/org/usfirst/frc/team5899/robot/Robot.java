@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.vision.VisionThread;
 
 
 //adam doesn't understand how github works
+//and now he should
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
