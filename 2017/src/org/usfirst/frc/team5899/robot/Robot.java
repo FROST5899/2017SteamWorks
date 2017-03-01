@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.vision.VisionRunner;
 import edu.wpi.first.wpilibj.vision.VisionThread;
 
 
-
+//adam doesn't understand how github works
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -499,7 +499,6 @@ public class Robot extends IterativeRobot {
 			}
 		}
 		
-		//william doesn't know github
 		testEncoders.displayEncoderValues();
 		//NetworkTable.initialize();
 		SmartDashboard.putBoolean("deliveryLowLimit", deliveryLowLim);
@@ -509,14 +508,6 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("NTtest1", y);
 		boolean NTConn = readingTable.isConnected();
 		SmartDashboard.putBoolean("NTtest2", NTConn);
-		/*this is a git test
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * AND IT SHOULD GO AWAY
-		 */
 		
 	}
 
