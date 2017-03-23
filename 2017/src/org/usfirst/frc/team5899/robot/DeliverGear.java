@@ -68,7 +68,7 @@ public void GearCases(){
 		if (state == 1){
 			SmartDashboard.putString("Delivery State", "EncoderReset1");
 			if (!armLowLimit.get()){
-				//armTalon.set(0.5); 
+				armTalon.set(-0.9); 
 				drivingArm = true;
 			}
 			else{
@@ -81,7 +81,7 @@ public void GearCases(){
 		if (state == 2){
 			SmartDashboard.putString("Delivery State", "RaiseDeployer");
 			if (!armHighLimit.get()){
-				armTalon.set(-0.7);
+				armTalon.set(-0.6);
 				drivingArm = true;
 			}
 			else{
@@ -113,7 +113,7 @@ public void GearCases(){
 			if (Timer.getFPGATimestamp() - firstTime < 0.5){
 				drivingChassis = true; 
 				chassisDrive.tankDrive(-0.7, -.7);
-				armTalon.set(-0.2);
+				armTalon.set(-0.3);
 				
 				
 			}
@@ -129,7 +129,7 @@ public void GearCases(){
 			
 			SmartDashboard.putString("Delivery State", "LowerDeployer");
 			if (!armLowLimit.get()){
-				armTalon.set(0.5); 
+				armTalon.set(-0.08); 
 				drivingArm = true;
 				
 			}

@@ -55,7 +55,6 @@ public class Robot extends IterativeRobot {
 	Encoder rightDriveEncoder = new Encoder(rightDriveEncoderA,rightDriveEncoderB);
 	Encoder winchEncoder = new Encoder(winchEncoderA,winchEncoderB);
 	Encoder deliveryEncoder = new Encoder(deliveryEncoderA,deliveryEncoderB);
-	
 	RobotDrive myRobot = new RobotDrive(Talon1, Talon6, Talon2, Talon3);
 	
 	
@@ -65,8 +64,8 @@ public class Robot extends IterativeRobot {
 	myRobot.setInvertedMotor(RobotDrive.MotorType.kRearLeft, true);
 	myRobot.setInvertedMotor(RobotDrive.MotorType.kFrontLeft, true);*/
 	Joystick driveStickLeft = new Joystick(0);
-	Joystick driveStickRight = new Joystick(1);
-	Joystick coPilotStick = new Joystick(2);
+	//Joystick driveStickRight = new Joystick(1);
+	Joystick coPilotStick = new Joystick(1);
 	Timer timer = new Timer();
 	DeliverGear gearDelivery = new DeliverGear(coPilotStick, Talon7, myRobot, deliveryEncoder, deliveryLowLimit, deliveryHighLimit);
 	EncoderTest testEncoders = new EncoderTest(leftDriveEncoder, rightDriveEncoder, winchEncoder, deliveryEncoder);
@@ -87,6 +86,7 @@ public class Robot extends IterativeRobot {
 	double trueAcceleration = 0.0;
 	double left, right;
 	double firstTimeScan;
+	double initTime;
 	double rectY1;
 	boolean autoVal;
 	boolean driving;
@@ -255,6 +255,7 @@ public class Robot extends IterativeRobot {
 		rightDriveEncoder.reset();
 		autoVal = SmartDashboard.getBoolean("Turn Left?", false);
 		driving = true;
+		vision.flickers = 0;
 	}
 
 	/**
@@ -264,9 +265,18 @@ public class Robot extends IterativeRobot {
 	public void autonomousPeriodic() {
 		
 		SmartDashboard.putBoolean("driving", driving);
+		driving = false;
 		if (driving){
-			driving = !autoDrive.driveStraight(24);
-			testEncoders.displayEncoderValues();
+			
+			//------Encoder Drive ------//
+			
+			//driving = !autoDrive.driveStraight(24);
+			//testEncoders.displayEncoderValues();
+			
+			//------Time Drive ------//
+			driving = (Timer.getFPGATimestamp() - firstTimeScan < 1000);
+			myRobot.arcadeDrive(.4,0);
+			
 			SmartDashboard.putBoolean("driving", driving);
 		} else {
 		if (autoVal){
@@ -383,15 +393,17 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		
 		double winchAxis = coPilotStick.getRawAxis(1);
+		boolean enableTurn = coPilotStick.getRawButton(6);
+		double coPilotTurn = coPilotStick.getRawAxis(4);
 		double deliveryAxis = -coPilotStick.getRawAxis(5);
 		double leftDriveAxis = driveStickLeft.getRawAxis(1);
-		double rightDriveAxis = driveStickRight.getRawAxis(1);
+		//double rightDriveAxis = driveStickRight.getRawAxis(1);
 		double leftZAxis = driveStickLeft.getRawAxis(2);
 		boolean fineControlButton = false; //driveStickLeft.getRawButton(2);
-		boolean driveStraightButton = driveStickRight.getRawButton(2);
-		boolean invertButtonLeft = driveStickLeft.getRawButton(2);
-		boolean deliveryLowLim = !deliveryLowLimit.get();
-		boolean deliveryHighLim = deliveryHighLimit.get();
+		//boolean driveStraightButton = driveStickRight.getRawButton(2);
+		boolean invertButtonLeft = driveStickLeft.getRawButton(1);
+		boolean deliveryLowLim = deliveryHighLimit.get(); 
+		boolean deliveryHighLim = deliveryLowLimit.get();
 		/*boolean invertButtonRight = driveStickRight.getRawButton(1);
 		if (invertButtonRight){ leftDriveAxis = -leftDriveAxis; }*/
 		//------Arcade Drive---------//
@@ -399,7 +411,7 @@ public class Robot extends IterativeRobot {
 		
 		if (invertButtonLeft){
 			leftDriveAxis = -leftDriveAxis;
-			leftZAxis = -leftZAxis;
+			//leftZAxis = -leftZAxis;
 		}
 		
 		if (fineControlButton) {
@@ -407,10 +419,11 @@ public class Robot extends IterativeRobot {
 			leftZAxis = leftZAxis/2;
 		}
 		if (!(gearDelivery.drivingChassis) && !vision.driving){
-		myRobot.arcadeDrive(-leftDriveAxis, .5*leftZAxis);
+			double turnPower = Math.abs(driveStickLeft.getRawAxis(3)-1)/2*leftZAxis;
+		myRobot.arcadeDrive(-leftDriveAxis, enableTurn ? coPilotTurn : turnPower);
 		}
 		
-		SmartDashboard.putBoolean("viosion driving", vision.driving);
+		SmartDashboard.putBoolean("vision driving", vision.driving);
 		
 		//------Tank Drive---------//
 		/*
@@ -481,10 +494,11 @@ public class Robot extends IterativeRobot {
 			}
 		} else {
 			//reset
-			gearDelivery.state = 1;
+			
 			vision.resetState();
 			vision.driving = false;
 			if (!coPilotStick.getRawButton(1)) {
+				gearDelivery.state = 1;
 				gearDelivery.drivingChassis = false;
 				gearDelivery.drivingArm = false;
 			}
@@ -493,11 +507,11 @@ public class Robot extends IterativeRobot {
 		if(coPilotStick.getRawButton(1)){
 			gearDelivery.GearCases();
 		} else {
-			if (!coPilotStick.getRawButton(2) || !coPilotStick.getRawButton(3)) {
+			//if (!coPilotStick.getRawButton(2) || !coPilotStick.getRawButton(3)) {
 				gearDelivery.state = 1;
 				gearDelivery.drivingArm = false;
 				gearDelivery.drivingChassis = false;
-			}
+			//}
 		}
 		
 		testEncoders.displayEncoderValues();
@@ -515,9 +529,29 @@ public class Robot extends IterativeRobot {
 	/**
 	 * This function is called periodically during test mode
 	 */
-	@Override
+	//@Override
+	public void testInit() {
+		/*timer.reset();
+		timer.start();
+		initTime = Timer.getFPGATimestamp();*/
+	}
+	
 	public void testPeriodic() {
-		//LiveWindow.run();
+	/*	double Time = Timer.getFPGATimestamp();
+		if (Math.abs(Time - initTime) < 2000) {
+			Talon7.set(.4);
+			Talon5.set(.4);
+			myRobot.arcadeDrive(.5,0);
+		}
+		else if (Math.abs(Time - initTime) < 5000) {
+			Talon7.set(-.4);
+			Talon5.set(-.4);
+			myRobot.arcadeDrive(0,0.5);
+		} else {
+			Talon7.set(0);
+			Talon5.set(0);
+			myRobot.arcadeDrive(0,0);
+		}*/
 	}
 
 		

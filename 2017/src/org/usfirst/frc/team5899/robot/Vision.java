@@ -28,6 +28,7 @@ public class Vision {
 	private double centerRect1;
 	private double centerRect2;	
 	double rectDistance = 0.0;
+	int flickers = 0;
 	String state = "scanning";
 	String DIR = "";
 	RobotDrive drive;
@@ -76,10 +77,16 @@ public class Vision {
 	}
 	
 	public void centerX(double forwardSpeed, double turn) {
-		double driveAddVal = .35;
-		double minDriveValue = .47;
-		double seventyTwo = (turn < 0) ? -driveAddVal : driveAddVal;
-		double speed =  seventyTwo + turn * .0000000125;
+		// ---- important value -----//
+		
+		
+		double driveAddVal = .36;//.35
+		double minDriveValue = .45;//47 on other chassis
+		
+		
+		//---------------------------///
+		double negatedVal = (turn < 0) ? -driveAddVal : driveAddVal;
+		double speed =  negatedVal + turn * .0000000125;
 		if (Math.abs(speed) < minDriveValue){
 			if (speed < 0){
 				speed = -minDriveValue;
@@ -113,6 +120,7 @@ public class Vision {
 		double OffCube = (Offset - (320/2) - 53)*(Offset - (320/2) - 53)*(Offset - (320/2) - 53);
 		
 		if (state == "scanning") {
+			this.flickers = 0;
 			driving = true;
 			if (Rect1 == -1) {
 				SmartDashboard.putBoolean("lined up", false);
@@ -149,6 +157,7 @@ public class Vision {
 			driving = true;
 			//drive.arcadeDrive(.5, 0);
 			//*.25); 
+			SmartDashboard.putNumber("flickering vqalue", flickers);
 			if(Timer.getFPGATimestamp() - Math.floor(Timer.getFPGATimestamp()) > 0.5){	
 				drive.arcadeDrive(.5, 0);
 				if( Rect1y < 5 && Rect1 > 200){
@@ -157,7 +166,12 @@ public class Vision {
 					firstTime = Timer.getFPGATimestamp();
 				}
 			} else {
-				state = "centering";
+				if (flickers < 50) {
+					this.flickers++;
+					state = "centering";
+				} else {
+					state = "delivering";
+				}
 			}
 		}
 		if (state == "delivering"){
