@@ -68,7 +68,7 @@ public void GearCases(){
 		if (state == 1){
 			SmartDashboard.putString("Delivery State", "EncoderReset1");
 			if (!armLowLimit.get()){
-				armTalon.set(-0.9); 
+				armTalon.set(-0.6); 
 				drivingArm = true;
 			}
 			else{
@@ -81,7 +81,7 @@ public void GearCases(){
 		if (state == 2){
 			SmartDashboard.putString("Delivery State", "RaiseDeployer");
 			if (!armHighLimit.get()){
-				armTalon.set(-0.6);
+				armTalon.set(-.9);
 				drivingArm = true;
 			}
 			else{

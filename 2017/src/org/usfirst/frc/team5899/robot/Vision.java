@@ -166,7 +166,7 @@ public class Vision {
 					firstTime = Timer.getFPGATimestamp();
 				}
 			} else {
-				if (flickers < 50) {
+				if (flickers < 50000000) {
 					this.flickers++;
 					state = "centering";
 				} else {

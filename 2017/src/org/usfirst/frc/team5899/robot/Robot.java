@@ -265,17 +265,18 @@ public class Robot extends IterativeRobot {
 	public void autonomousPeriodic() {
 		
 		SmartDashboard.putBoolean("driving", driving);
-		driving = false;
+		//driving = false;
+		
 		if (driving){
 			
 			//------Encoder Drive ------//
 			
-			//driving = !autoDrive.driveStraight(24);
-			//testEncoders.displayEncoderValues();
+			driving = !autoDrive.driveStraight(60);
+			testEncoders.displayEncoderValues();
 			
 			//------Time Drive ------//
-			driving = (Timer.getFPGATimestamp() - firstTimeScan < 1000);
-			myRobot.arcadeDrive(.4,0);
+			//driving = (Timer.getFPGATimestamp() - firstTimeScan < 1000);
+			//myRobot.arcadeDrive(.4,0);
 			
 			SmartDashboard.putBoolean("driving", driving);
 		} else {
@@ -468,10 +469,10 @@ public class Robot extends IterativeRobot {
 		//------ CoPilot -------//
 		Talon5.set(winchAxis);
 		if(!gearDelivery.drivingArm){
-			if((!deliveryHighLim) && deliveryAxis < 0){
+			if(deliveryAxis < 0){
 				Talon7.set(0.9*deliveryAxis);
 			}
-			if((!deliveryLowLim) && deliveryAxis > 0){
+			if(deliveryAxis > 0){
 				Talon7.set(0.9*deliveryAxis);
 			}
 			
@@ -552,6 +553,7 @@ public class Robot extends IterativeRobot {
 			Talon5.set(0);
 			myRobot.arcadeDrive(0,0);
 		}*/
+		testEncoders.displayEncoderValues();
 	}
 
 		
